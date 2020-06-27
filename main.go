@@ -1,17 +1,19 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"goGamer/gamer"
 	"time"
 )
 
-const baseurl = "https://forum.gamer.com.tw/C.php?page=2&bsn=60076&snA=3146926"
-
 func main() {
+	urlPtr := flag.String("url", "", "想要搜尋的討論串網址(哪一層樓的網址都可以)")
+	idPtr := flag.String("userID", "", "想要搜尋的使用者ID")
+	flag.Parse()
 	s := time.Now()
-	f, _ := gamer.FindAllFloor("BAHAMUT000", baseurl)
+	fmt.Println(*urlPtr, *idPtr)
+	f, _ := gamer.FindAllFloor(*idPtr, *urlPtr)
 	f.GetResult()
-	//gamer.SingleTest(baseurl)
 	fmt.Println(time.Since(s))
 }
