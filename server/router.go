@@ -33,5 +33,6 @@ func NewRouter() *gin.Engine {
 	server := gin.Default()
 	server.POST("/FindAllFloor", api.FindAllFloor)
 	server.POST("/FindAuthorFloor", api.FindAuthorFloor)
+	server.POST("/FindAllFloorInfo", api.FindAllFloorInfo)
 	return server
 }

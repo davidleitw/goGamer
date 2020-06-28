@@ -37,6 +37,27 @@ func getPageBody(url string) (string, error) {
 	return string(bodyByte), nil
 }
 
+func FindAllFloorInfo(baseurl string) (FloorSet, error) {
+	var Fs FloorSet
+	urls, err := getUrlSet(baseurl)
+	if err != nil {
+		return Fs, err
+	}
+	wg := new(sync.WaitGroup)
+	wg.Add(len(urls))
+
+	for _, url := range urls {
+		go func() {
+			fs := handleFindAllInfo(url, wg)
+			Fs.AddFloors(fs)
+		}()
+		time.Sleep(25000 * time.Microsecond)
+	}
+	wg.Wait()
+	Fs.SortResult()
+	return Fs, nil
+}
+
 // 輸入用戶ID與想要爬取的討論串, 就會將所有結果放進FloorSet並且回傳
 func FindAllFloor(baseurl, userID string) (FloorSet, error) {
 	var Fs FloorSet
@@ -112,7 +133,7 @@ func handle(url string, userID string, wg *sync.WaitGroup) []Floor {
 				// 設置樓層資訊中的樓層數, 用戶ID, 用戶名稱
 				f.SetInfo(getFloorNum(s1.Find("a.floor").First().Text()),
 					s1.Find("a.username").First().Text(),
-					s1.Find("a.userid").First().Text())
+					ID)
 				found = true
 			}
 		})
@@ -125,7 +146,33 @@ func handle(url string, userID string, wg *sync.WaitGroup) []Floor {
 			})
 		}
 	})
+
 	defer wg.Done()
+	return fs
+}
+
+// 不過濾使用者, 爬取每一層樓
+func handleFindAllInfo(url string, wg *sync.WaitGroup) []Floor {
+	var fs []Floor
+	defer wg.Done()
+	html, _ := getPageBody(url)
+	dom, _ := goquery.NewDocumentFromReader(strings.NewReader(html))
+
+	dom.Find("div.c-section__main").Each(func(idx int, selection *goquery.Selection) {
+		var f Floor
+		selection.Find("div.c-post__header__author").Each(func(idx int, s1 *goquery.Selection) {
+			// 設置樓層資訊中的樓層數, 用戶ID, 用戶名稱
+			f.SetInfo(getFloorNum(s1.Find("a.floor").First().Text()),
+				s1.Find("a.username").First().Text(),
+				s1.Find("a.userid").First().Text())
+		})
+		selection.Find("div.c-article__content").Each(func(idx int, s1 *goquery.Selection) {
+			// 將空格刪掉
+			s1.Remove()
+			f.Setcontent(s1.Text())
+			fs = append(fs, f)
+		})
+	})
 	return fs
 }
 

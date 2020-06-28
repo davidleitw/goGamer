@@ -16,4 +16,6 @@ func main() {
 	f, _ := gamer.FindAuthorFloor(*urlPtr, *idPtr)
 	f.GetResult()
 	fmt.Println(time.Since(s))
+	// f, _ := gamer.FindAllFloorInfo("https://forum.gamer.com.tw/C.php?page=70&bsn=30861&snA=18013&tnum=698")
+	// f.GetResult()
 }

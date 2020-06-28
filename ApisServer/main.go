@@ -1,8 +1,14 @@
 package main
 
-import "goGamer/server"
+import (
+	"fmt"
+	"goGamer/server"
+)
 
 func main() {
 	r := server.NewRouter()
-	r.Run()
+	err := r.Run()
+	if err != nil {
+		fmt.Println("Some error with server.")
+	}
 }

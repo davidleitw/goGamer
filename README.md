@@ -27,8 +27,11 @@ API的部份是以gin當作伺服器框架, 到時候可以會部屬到Heroku上
 * [巴哈姆特討論串網址分析](#巴哈姆特討論串網址分析)
 * [討論串樓層Html解析](#討論串樓層Html架構分析)
 * [爬蟲思路](#整體程式架構概述)
-* [一般使用者](#直接clone下來的作法)
-* [API格式](#方便程式開發者運用爬蟲去爬取特定的資料)
+* [一般使用者](#一般使用者)
+* [API格式](#API格式)
+    * 獲得所有樓層資訊
+    * 根據使用者ID獲得該使用者在特定討論串的發文紀錄(不會顯示原始樓層數)
+    * 根據使用者ID獲得該使用者在特定討論串的發文紀錄(會顯示原始樓層數, 不過速度較慢)
 
 --- 
 
@@ -178,13 +181,52 @@ user@user:~$ ./main -url="https://forum.gamer.com.tw/C.php?page=2&bsn=60076&snA=
 --- 
 
 ## API格式
+### 獲得此討論串所有文章的訊息
+#### 此方法可以獲得所有樓層的基本資訊
+傳遞json參數意義
+<br>"baseurl"欄位擺放的是想要查詢的討論串欄位, 值得一提的是不管貼的連結所在的page在哪頁, 都可以藉由api找到整串的資料
 
+#### Request
+
+- Method: **POST**
+- Url: ```https://go-gamer.herokuapp.com/FindAllFloorInfo```
+- Headers： Content-Type:application/json
+- Body:
+
+```json
+{
+    "baseurl": "https://forum.gamer.com.tw/C.php?page=2&bsn=60076&snA=3146926",
+    "userID": "leichitw"
+}
+```
+#### Response
+
+回傳的data是以樓層(從1樓開始, 失去原始樓層資料)為排列的資料
+
+```json
+{
+    "status": 200,
+    "data":[
+
+    ]
+}
+```
+
+錯誤時候的回傳
+
+```json
+{
+    "status": 400,
+    "error":  "請確認一下傳入的資料有沒有符合api的格式",
+}
+```
+
+---
 ### 找到某個User在某個討論串中的所有文章
 #### 此方法不會獲得原始的樓層, 不過相較於FindAllFloor來說速度更快, 也幾乎不會出錯
 #### 感謝FizzyEit好夥伴丟的PR
-傳遞json參數意義: 
-&emsp;&emsp;"userID"欄位擺放使用者想要查詢對象的巴哈ID
-&emsp;&emsp;"baseurl"欄位擺放的是想要查詢的討論串欄位, 值得一提的是不管貼的連結所在的page在哪頁, 都可以藉由api找到整串的資料
+ 
+<br>"userID"欄位擺放使用者想要查詢對象的巴哈ID
 #### Request
 
 - Method: **POST**
@@ -240,15 +282,13 @@ user@user:~$ ./main -url="https://forum.gamer.com.tw/C.php?page=2&bsn=60076&snA=
     "error":  "請確認一下傳入的資料有沒有符合api的格式",
 }
 ```
-
-
-
+--- 
 ### 找到某個User在某個討論串中的所有文章
 #### 此方法會獲得文章的原始樓層, 不過因為開了大量的goroutine, 所以有機會某些樓層的request會被擋下來
 
 傳遞json參數意義: 
-&emsp;&emsp;"userID"欄位擺放使用者想要查詢對象的巴哈ID
-&emsp;&emsp;"baseurl"欄位擺放的是想要查詢的討論串欄位, 值得一提的是不管貼的連結所在的page在哪頁, 都可以藉由api找到整串的資料
+<br>"userID"欄位擺放使用者想要查詢對象的巴哈ID
+<br>"baseurl"欄位擺放的是想要查詢的討論串欄位, 值得一提的是不管貼的連結所在的page在哪頁, 都可以藉由api找到整串的資料
 
 #### Request
 
