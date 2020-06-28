@@ -64,7 +64,7 @@
 所以每一層樓的架構是這個樣子
 ```html
 <div class="c-section__main c-post ">               // 每一層樓都用c-section__main包起來
-    <div class="c-post__header"></div>              // 主要放樓層數, 以及樓主的資料
+    <div class="c-post__header"></div>              // 主要放樓層數, 以及樓主的資料, 還有文章的基本訊息
     <div class="c-post__body"></div>                // 文章內容
     <div class="c-post__footer c-reply"></div>      // 留言區
 </div>
@@ -72,19 +72,27 @@
 我們初步的目的是要用來找樓以及內容, 所以一開始只要著重在header跟body的處理即可
 
 - c-post__header(存放樓層數以及樓主資料)
-![](https://imgur.com/LvpWQh5.png)
 ```html
 <div class="c-post__header"> 
-    <div class="c-post__header__tools"></div>
-    <div class="c-post__header__author"></div>
-    <div class="c-post__header__info">
+    <div class="c-post__header__tools"></div>      放置開圖工具
+    <div class="c-post__header__author">...</div>  樓層數, 樓主帳戶名稱等資料
+    <div class="c-post__header__info">...</div>    發文時間, 發送ip等等
 </div>
 ```
 
-
+- c-post_header__tools 
 ![](https://imgur.com/1Q9W4xd.png)
-
-一開始先忽略c-post__header__tools, 這個區域是放每頁第一樓開圖工具的地方(上圖最右邊的地方)
+c-post__header__tools這個區域就是在每頁的第一樓存放討論串標題跟開圖工具的區域(如上圖所示)
+除了第一樓之外通常這個區域都是空的
+<br>
+- c-post_header__author
+![](https://imgur.com/QzwFkzL.png)
+這部份就是我們爬蟲的第一個重點, 這個區域能獲取的資訊有樓層數, 用戶ID以及名稱, 最後還有推噓的數目
+因為這邊的資訊相較一下欄位比較沒有這麼複雜, 所以說爬起來相對的簡單
+<br>
+- c-post_header__info
+![](https://imgur.com/ygZ5ghd.png)
+info區塊就是擺一些發文時的資訊(發文時間, ip位置等等..)
 
 ---
 
