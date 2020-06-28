@@ -62,6 +62,7 @@ func FindAllFloor(baseurl, userID string) (FloorSet, error) {
 		time.Sleep(25000 * time.Microsecond)
 	}
 	wg.Wait()
+	Fs.SortResult()
 	return Fs, nil
 }
 
@@ -89,6 +90,7 @@ func FindAuthorFloor(baseurl, userID string) (FloorSet, error) {
 		time.Sleep(2500 * time.Microsecond)
 	}
 	wg.Wait()
+	Fs.SortResult()
 	return Fs, nil
 }
 
