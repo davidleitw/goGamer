@@ -70,7 +70,7 @@ func getFloorInfo(baseurl string) ([]string, error) {
 //指定userID找樓
 func getAuthorUrlSet(baseurl, userID string) ([]string, error) {
 	var result []string
-
+	fmt.Println(baseurl, userID)
 	front := strings.Split(baseurl, "?")[0]
 	max, _ := getAuthorMaxFloorNumber(baseurl, userID)
 	page := int(max/20) + 1

@@ -30,3 +30,21 @@ func FindAllFloor(ctx *gin.Context) {
 		})
 	}
 }
+
+func FindAuthorFloor(ctx *gin.Context) {
+	var servicer Finder
+
+	if err := ctx.BindJSON(&servicer); err == nil {
+		result, _ := gamer.FindAuthorFloor(servicer.BaseUrl, servicer.UserID)
+
+		ctx.JSON(http.StatusOK, gin.H{
+			"status": http.StatusOK,
+			"data":   result.GetFloors(),
+		})
+	} else {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"status": 400,
+			"error":  "請確認一下傳入的資料有沒有符合api的格式",
+		})
+	}
+}
