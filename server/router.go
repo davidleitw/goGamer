@@ -32,5 +32,6 @@ func NewRouter() *gin.Engine {
 	gin.SetMode(gin.DebugMode)
 	server := gin.Default()
 	server.POST("/FindAllFloor", api.FindAllFloor)
+	server.POST("/FindAuthorFloor", api.FindAuthorFloor)
 	return server
 }
