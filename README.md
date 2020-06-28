@@ -27,6 +27,7 @@
 * [討論串樓層Html解析](#Html架構分析)
 * [爬蟲思路](#整體程式架構概述)
 * [一般使用者](#直接clone下來的作法)
+* [提供API](#方便程式開發者運用爬蟲去爬取特定的資料)
 
 --- 
 
@@ -44,7 +45,7 @@
 ---
 
 ### 討論串樓層Html架構分析
-- 整體架構
+- **整體架構**
 
 爬蟲的第一步往往都是按下F12觀察網頁的架構
 這邊先來討論每層樓的樓層數, 用戶名稱以及用戶帳號放在html的哪個部份
@@ -71,7 +72,7 @@
 ```
 我們初步的目的是要用來找樓以及內容, 所以一開始只要著重在header跟body的處理即可
 
-- c-post__header(存放樓層數以及樓主資料)
+#### **c-post__header(存放樓層數以及樓主資料)**
 ```html
 <div class="c-post__header"> 
     <div class="c-post__header__tools"></div>      放置開圖工具
@@ -80,24 +81,55 @@
 </div>
 ```
 
-- c-post_header__tools 
+- **c-post_header__tools** 
 
 ![](https://imgur.com/1Q9W4xd.png)
 c-post__header__tools這個區域就是在每頁的第一樓存放討論串標題跟開圖工具的區域(如上圖所示)
 除了第一樓之外通常這個區域都是空的
 <br>
 
-- c-post_header__author
+- **c-post_header__author**
 
 ![](https://imgur.com/QzwFkzL.png)
 這部份就是我們爬蟲的第一個重點, 這個區域能獲取的資訊有樓層數, 用戶ID以及名稱, 最後還有推噓的數目
+
 因為這邊的資訊相較一下欄位比較沒有這麼複雜, 所以說爬起來相對的簡單
 <br>
 
-- c-post_header__info
+- **c-post_header__info**
 
 ![](https://imgur.com/ygZ5ghd.png)
-info區塊就是擺一些發文時的資訊(發文時間, ip位置等等..)
+info區塊就是存放一些發文時的資訊(發文時間, ip位置等等..)
+
+#### **c-post__body**(存放文章內容)
+
+```html
+c-post__body架構
+<div class="c-post_body"> 
+    <article class="c-article FM-P2" id="xxxxxxxx">... </article> // 存放文章內容
+    <div class="c-post__body__buttonbae">                         // 工具列(贊, 噓, 回覆等等..)
+</div>
+```
+
+下圖資工串的第一樓, 拿阿條的文章來做範例
+![](https://imgur.com/cvkiRGD.png)
+
+我們爬蟲通常要爬的就是`<article>`的區塊了, 因為如果要爬gp,bp的話header的部份也可以獲得
+
+展開`<article>`區塊來觀察看看, 如下圖所示
+
+![](https://imgur.com/igPLMKc.png)
+
+如果這篇文章沒有插入圖片影片或者超連結, 就會是個單純的div把文章內容都包起來
+
+```html
+<div class="c-article__content">
+    文章內容
+</div>
+```
+
+我們爬蟲就會針對上述區塊去獲取我們想要的文章內容
+
 
 ---
 
