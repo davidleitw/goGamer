@@ -179,7 +179,66 @@ user@user:~$ ./main -url="https://forum.gamer.com.tw/C.php?page=2&bsn=60076&snA=
 
 ## API格式
 
-### 找到某個User在某個討論串的所有文章
+### 找到某個User在某個討論串中的所有文章
+#### 此方法不會獲得原始的樓層, 不過相較於FindAllFloor來說速度更快, 也幾乎不會出錯
+#### 感謝FizzyEit好夥伴丟的PR
+傳遞json參數意義: 
+&emsp;&emsp;"userID"欄位擺放使用者想要查詢對象的巴哈ID
+&emsp;&emsp;"baseurl"欄位擺放的是想要查詢的討論串欄位, 值得一提的是不管貼的連結所在的page在哪頁, 都可以藉由api找到整串的資料
+#### Request
+
+- Method: **POST**
+- Url: ```https://go-gamer.herokuapp.com/FindAuthorFloor```
+- Headers： Content-Type:application/json
+- Body:
+
+```json
+{
+    "baseurl": "https://forum.gamer.com.tw/C.php?page=2&bsn=60076&snA=3146926",
+    "userID": "leichitw"
+}
+```
+
+#### Response
+
+回傳的data是以樓層為排列的資料
+
+```json
+{
+    "status": 200,
+    "data":[
+        {
+            "Num": 5230,
+            "UserName": "驥哥",
+            "UserID": "leichitw",
+            "Content": "\n如果學校先學c++,還有必要回頭學c嗎?我看網路很多範例都用c寫,沒學過表示有時候看不太懂qq\n"
+        },
+        {
+            "Num": 5208,
+            "UserName": "驥哥",
+            "UserID": "leichitw",
+            "Content": "\n想問此串的前輩們,微積分這門科目,以後會很常用到嗎?還有準備研究所考試的時候佔的比例高嗎?因為我們教授的講法我不太習慣...所以都自己讀偏多,考試也考得不錯.但這最近意識到我觀念不是說很清楚..,感覺有點像只會做題目,如果有人問我觀念,或者某個公式的含意,我都回答不出來.這樣子之後如果研究所複習會不會很吃力呢?要改善這樣的狀況有什麼推薦的用書嗎?還是繼續要學校的參考書就好? 謝謝回答!\n"
+        },
+        .
+        .
+        .
+    ]
+}
+```
+
+錯誤時候的回傳
+
+```json
+{
+    "status": 400,
+    "error":  "請確認一下傳入的資料有沒有符合api的格式",
+}
+```
+
+
+
+### 找到某個User在某個討論串中的所有文章
+#### 此方法會獲得文章的原始樓層, 不過因為開了大量的goroutine, 所以有機會某些樓層的request會被擋下來
 
 傳遞json參數意義: 
 &emsp;&emsp;"userID"欄位擺放使用者想要查詢對象的巴哈ID

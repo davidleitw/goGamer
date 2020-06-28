@@ -12,8 +12,8 @@ func main() {
 	idPtr := flag.String("userID", "", "想要搜尋的使用者ID")
 	flag.Parse()
 	s := time.Now()
-	fmt.Println(*urlPtr, *idPtr)
-	f, _ := gamer.FindAllFloor(*idPtr, *urlPtr)
+	// 比起原先的方法更加的快速
+	f, _ := gamer.FindAuthorFloor(*urlPtr, *idPtr)
 	f.GetResult()
 	fmt.Println(time.Since(s))
 }

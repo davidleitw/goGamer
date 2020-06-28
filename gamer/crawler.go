@@ -38,11 +38,10 @@ func getPageBody(url string) (string, error) {
 }
 
 // 輸入用戶ID與想要爬取的討論串, 就會將所有結果放進FloorSet並且回傳
-func FindAllFloor(userid string, baseurl string) (FloorSet, error) {
+func FindAllFloor(baseurl, userID string) (FloorSet, error) {
 	var Fs FloorSet
 	// 獲得討論串每一頁的連結(一頁總共20層樓)
 	urls, err := getUrlSet(baseurl)
-	fmt.Printf("total floor number are %d\n", len(urls))
 	if err != nil {
 		return Fs, err
 	}
@@ -53,24 +52,24 @@ func FindAllFloor(userid string, baseurl string) (FloorSet, error) {
 	// 對於每個頁的連結去get其html, 並且用goquery分析
 	for _, url := range urls {
 		go func() {
-			f := handle(url, userid, wg)
+			f := handle(url, userID, wg)
 			// 將樓層資訊彙整到Floor set裡面
 			if len(f) >= 1 {
 				Fs.AddFloors(f)
 			}
 		}()
-		time.Sleep(2500 * time.Microsecond)
+		// 避免過於頻繁的get, 導致request被擋下來
+		time.Sleep(25000 * time.Microsecond)
 	}
 	wg.Wait()
 	return Fs, nil
 }
 
-//只找使用者在討論串的樓(無法獲得實際在討論串樓層數)
+// 只找使用者在討論串的樓(無法獲得實際在討論串樓層數)
 func FindAuthorFloor(baseurl, userID string) (FloorSet, error) {
 	var Fs FloorSet
 	// 獲得討論串每一頁的連結(一頁總共20層樓)
 	urls, err := getAuthorUrlSet(baseurl, userID)
-	fmt.Printf("total floor number are %d\n", len(urls))
 	if err != nil {
 		return Fs, err
 	}
