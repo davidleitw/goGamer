@@ -17,7 +17,7 @@ func FindAllFloor(ctx *gin.Context) {
 	// 資料有正確綁定
 	if err := ctx.BindJSON(&servicer); err == nil {
 		// fmt.Println("url = ", servicer.BaseUrl, "UserID = ", servicer.UserID)
-		result, _ := gamer.FindAllFloor(servicer.UserID, servicer.BaseUrl)
+		result, _ := gamer.FindAllFloor(servicer.BaseUrl, servicer.UserID)
 
 		ctx.JSON(http.StatusOK, gin.H{
 			"status": http.StatusOK,
