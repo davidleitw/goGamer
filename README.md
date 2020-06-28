@@ -81,16 +81,21 @@
 ```
 
 - c-post_header__tools 
+
 ![](https://imgur.com/1Q9W4xd.png)
 c-post__header__tools這個區域就是在每頁的第一樓存放討論串標題跟開圖工具的區域(如上圖所示)
 除了第一樓之外通常這個區域都是空的
 <br>
+
 - c-post_header__author
+
 ![](https://imgur.com/QzwFkzL.png)
 這部份就是我們爬蟲的第一個重點, 這個區域能獲取的資訊有樓層數, 用戶ID以及名稱, 最後還有推噓的數目
 因為這邊的資訊相較一下欄位比較沒有這麼複雜, 所以說爬起來相對的簡單
 <br>
+
 - c-post_header__info
+
 ![](https://imgur.com/ygZ5ghd.png)
 info區塊就是擺一些發文時的資訊(發文時間, ip位置等等..)
 
