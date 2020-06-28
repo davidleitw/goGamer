@@ -57,10 +57,9 @@ func FindAllFloor(userid string, baseurl string) (FloorSet, error) {
 			// 將樓層資訊彙整到Floor set裡面
 			if len(f) >= 1 {
 				Fs.AddFloors(f)
-
 			}
 		}()
-		time.Sleep(1950 * time.Microsecond)
+		time.Sleep(2500 * time.Microsecond)
 	}
 	wg.Wait()
 	return Fs, nil
@@ -90,6 +89,7 @@ func handle(url string, userID string, wg *sync.WaitGroup) []Floor {
 		})
 		if found {
 			selection.Find("div.c-article__content").Each(func(idx int, s1 *goquery.Selection) {
+				// 將空格刪掉
 				s1.Remove()
 				f.Setcontent(s1.Text())
 				fs = append(fs, f)

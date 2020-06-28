@@ -8,36 +8,36 @@ import (
 var count int = 0
 
 type Floor struct {
-	num      int    // 樓層數
-	userName string // 用戶名稱
-	userID   string // 用戶帳號
-	content  string // 樓層主體
+	Num      int    // 樓層數
+	UserName string // 用戶名稱
+	UserID   string // 用戶帳號
+	Content  string // 樓層主體
 }
 
 func (f *Floor) SetInfo(num int, name string, id string) {
-	f.num = num
-	f.userName = name
-	f.userID = id
+	f.Num = num
+	f.UserName = name
+	f.UserID = id
 }
 
 func (f *Floor) Setcontent(content string) {
-	f.content = content
+	f.Content = content
 }
 
 func (f *Floor) GetNum() int {
-	return f.num
+	return f.Num
 }
 
 func (f *Floor) GetuserName() string {
-	return f.userName
+	return f.UserName
 }
 
 func (f *Floor) GetuserID() string {
-	return f.userID
+	return f.UserID
 }
 
 func (f *Floor) GetContent() string {
-	return f.content
+	return f.Content
 }
 
 type FloorSet struct {
@@ -45,10 +45,18 @@ type FloorSet struct {
 	total  int
 }
 
+func (Fs *FloorSet) GetOneFloor(index int) Floor {
+	return Fs.floors[index]
+}
+
+func (Fs *FloorSet) GetFloors() []Floor {
+	return Fs.floors
+}
+
 func (Fs *FloorSet) SortResult() {
 	// 依照樓層排序
 	sort.SliceStable(Fs.floors, func(i, j int) bool {
-		return Fs.floors[i].num < Fs.floors[j].num
+		return Fs.floors[i].Num < Fs.floors[j].Num
 	})
 }
 
