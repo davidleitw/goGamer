@@ -46,6 +46,7 @@ type FloorSet struct {
 }
 
 func (Fs *FloorSet) SortResult() {
+	// 依照樓層排序
 	sort.SliceStable(Fs.floors, func(i, j int) bool {
 		return Fs.floors[i].num < Fs.floors[j].num
 	})

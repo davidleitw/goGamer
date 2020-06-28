@@ -44,6 +44,8 @@
 ---
 
 ### 討論串樓層Html架構分析
+- 整體架構
+
 爬蟲的第一步往往都是按下F12觀察網頁的架構
 這邊先來討論每層樓的樓層數, 用戶名稱以及用戶帳號放在html的哪個部份
 ![](https://imgur.com/pU5VAMS.png)
@@ -55,11 +57,34 @@
 
 其中每層樓又包含著三個部份
 ```html
-<div class="c-post__header">
+<div class="c-post__header">         
 <div class="c-post__body">
 <div class="c-post__footer c-reply">
 ```
+所以每一層樓的架構是這個樣子
+```html
+<div class="c-section__main c-post ">               // 每一層樓都用c-section__main包起來
+    <div class="c-post__header"></div>              // 主要放樓層數, 以及樓主的資料
+    <div class="c-post__body"></div>                // 文章內容
+    <div class="c-post__footer c-reply"></div>      // 留言區
+</div>
+```
+我們初步的目的是要用來找樓以及內容, 所以一開始只要著重在header跟body的處理即可
 
+- c-post__header(存放樓層數以及樓主資料)
+![](https://imgur.com/LvpWQh5.png)
+```html
+<div class="c-post__header"> 
+    <div class="c-post__header__tools"></div>
+    <div class="c-post__header__author"></div>
+    <div class="c-post__header__info">
+</div>
+```
+
+
+![](https://imgur.com/1Q9W4xd.png)
+
+一開始先忽略c-post__header__tools, 這個區域是放每頁第一樓開圖工具的地方(上圖最右邊的地方)
 
 ---
 

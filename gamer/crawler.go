@@ -55,7 +55,10 @@ func FindAllFloor(userid string, baseurl string) (FloorSet, error) {
 		go func() {
 			f := handle(url, userid, wg)
 			// 將樓層資訊彙整到Floor set裡面
-			Fs.AddFloors(f)
+			if len(f) >= 1 {
+				Fs.AddFloors(f)
+
+			}
 		}()
 		time.Sleep(1950 * time.Microsecond)
 	}
