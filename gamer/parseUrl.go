@@ -67,6 +67,60 @@ func getFloorInfo(baseurl string) ([]string, error) {
 	return []string{bsn, snA}, nil
 }
 
+//指定userID找樓
+func getAuthorUrlSet(baseurl, userID string) ([]string, error) {
+	var result []string
+
+	front := strings.Split(baseurl, "?")[0]
+	max, _ := getAuthorMaxFloorNumber(baseurl, userID)
+	page := int(max/20) + 1
+
+	bsn, snA, _ := getFloorInfoPlus(baseurl)
+
+	for i := 1; i <= page; i++ {
+		result = append(result, fmt.Sprintf("%s?page=%d&bsn=%s&snA=%s&s_author=%s", front, i, bsn, snA, userID))
+	}
+	return result, nil
+}
+
+func getAuthorMaxFloorNumber(baseurl, userID string) (int, error) {
+	front := strings.Split(baseurl, "?")[0]
+	parse, err := url.Parse(baseurl)
+	if err != nil {
+		return -1, err
+	}
+	// 獲得文章的ID
+	values, err := url.ParseQuery(parse.RawQuery)
+	if err != nil {
+		return -1, err
+	}
+	bsn := values.Get("bsn")
+	snA := values.Get("snA")
+
+	target := fmt.Sprintf("%s?page=%d&bsn=%s&snA=%s&s_author=%s", front, 999999, bsn, snA, userID)
+
+	html, _ := getPageBody(target)
+	dom, _ := goquery.NewDocumentFromReader(strings.NewReader(html))
+	s := dom.Find("div.c-post__header__author>a.floor").Last()
+	n := getFloorNum(s.Text())
+	return n, nil
+}
+
+//info改寫
+func getFloorInfoPlus(baseurl string) (string, string, error) {
+	parse, err := url.Parse(baseurl)
+	if err != nil {
+		return "", "", err
+	}
+
+	values, err := url.ParseQuery(parse.RawQuery)
+	if err != nil {
+		return "", "", err
+	}
+	bsn, snA := values.Get("bsn"), values.Get("snA")
+	return bsn, snA, nil
+}
+
 // 將爬取到的樓層字串轉換成整數
 // Ex 輸入 "20388 樓"  輸出 20388
 func getFloorNum(floor string) int {

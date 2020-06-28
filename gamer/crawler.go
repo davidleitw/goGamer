@@ -65,6 +65,34 @@ func FindAllFloor(userid string, baseurl string) (FloorSet, error) {
 	return Fs, nil
 }
 
+//只找使用者在討論串的樓(無法獲得實際在討論串樓層數)
+func FindAuthorFloor(baseurl, userID string) (FloorSet, error) {
+	var Fs FloorSet
+	// 獲得討論串每一頁的連結(一頁總共20層樓)
+	urls, err := getAuthorUrlSet(baseurl, userID)
+	fmt.Printf("total floor number are %d\n", len(urls))
+	if err != nil {
+		return Fs, err
+	}
+
+	wg := new(sync.WaitGroup)
+	wg.Add(len(urls))
+
+	// 對於每個頁的連結去get其html, 並且用goquery分析
+	for _, url := range urls {
+		go func() {
+			f := handle(url, userID, wg)
+			// 將樓層資訊彙整到Floor set裡面
+			if len(f) >= 1 {
+				Fs.AddFloors(f)
+			}
+		}()
+		time.Sleep(2500 * time.Microsecond)
+	}
+	wg.Wait()
+	return Fs, nil
+}
+
 // 爬蟲主體, 爬完之後把每一層樓的資料放在一個Floor陣列傳回
 func handle(url string, userID string, wg *sync.WaitGroup) []Floor {
 	var fs []Floor
