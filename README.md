@@ -226,6 +226,15 @@ user@user:~$ ./main -url="https://forum.gamer.com.tw/C.php?page=2&bsn=60076&snA=
 }
 ```
 
+錯誤時候的回傳
+
+```json
+{
+    "status": 400,
+    "error":  "請確認一下傳入的資料有沒有符合api的格式",
+}
+```
+
 
 
 
