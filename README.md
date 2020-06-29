@@ -118,7 +118,7 @@ c-post__body架構
 下圖資工串的第一樓, 拿阿條的文章來做範例
 ![](https://imgur.com/cvkiRGD.png)
 
-我們爬蟲通常要爬的就是`<article>`的區塊了, 因為如果要爬gp,bp的話header的部份也可以獲得
+我們爬蟲通常要爬的就是`<article>`的區塊了, 因為如果要爬gp, bp的話header的部份也可以獲得
 
 展開`<article>`區塊來觀察看看, 如下圖所示
 
@@ -190,7 +190,7 @@ user@user:~$ ./main -url="https://forum.gamer.com.tw/C.php?page=2&bsn=60076&snA=
 
 - Method: **POST**
 - Url: ```https://go-gamer.herokuapp.com/FindAllFloorInfo```
-- Headers： Content-Type:application/json
+- Headers: Content-Type:application/json
 - Body:
 
 ```json
@@ -244,7 +244,7 @@ user@user:~$ ./main -url="https://forum.gamer.com.tw/C.php?page=2&bsn=60076&snA=
 
 - Method: **POST**
 - Url: ```https://go-gamer.herokuapp.com/FindAuthorFloor```
-- Headers： Content-Type:application/json
+- Headers: Content-Type:application/json
 - Body:
 
 ```json
@@ -307,7 +307,7 @@ user@user:~$ ./main -url="https://forum.gamer.com.tw/C.php?page=2&bsn=60076&snA=
 
 - Method: **POST**
 - Url: ```https://go-gamer.herokuapp.com/FindAllFloor```
-- Headers： Content-Type:application/json
+- Headers: Content-Type:application/json
 - Body:
 
 ```json
