@@ -5,8 +5,6 @@ import (
 	"sort"
 )
 
-var count int = 0
-
 type Floor struct {
 	Num      int    // 樓層數
 	UserName string // 用戶名稱
