@@ -50,7 +50,7 @@ func FindUserInfo(UserID string) (UserInfo, error) {
 			race := strings.Replace(info[1], " ", "", -1)
 			occu := strings.Replace(info[2], " ", "", -1)
 
-			user.Lever = level
+			user.Level = level
 			user.Race = race
 			user.Occupation = occu
 		case 4:
