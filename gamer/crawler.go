@@ -52,14 +52,15 @@ func FindAllFloor(userid string, baseurl string) (FloorSet, error) {
 
 	// 對於每個頁的連結去get其html, 並且用goquery分析
 	for _, url := range urls {
-		go func() {
-			f := handle(url, userid, wg)
+		go func(wg *sync.WaitGroup) {
+			f := handle2(url, userid)
 			// 將樓層資訊彙整到Floor set裡面
 			if len(f) >= 1 {
 				Fs.AddFloors(f)
 			}
-		}()
-		time.Sleep(2500 * time.Microsecond)
+			wg.Done()
+		}(wg)
+		time.Sleep(4000 * time.Microsecond)
 	}
 	wg.Wait()
 	return Fs, nil
@@ -125,6 +126,38 @@ func handle(url string, userID string, wg *sync.WaitGroup) []Floor {
 		}
 	})
 	defer wg.Done()
+	return fs
+}
+func handle2(url string, userID string) []Floor {
+	var fs []Floor
+	// 由url轉換成html文檔
+	html, _ := getPageBody(url)
+	// 解析html文檔來找尋特定的使用者
+	dom, _ := goquery.NewDocumentFromReader(strings.NewReader(html))
+
+	dom.Find("div.c-section__main").Each(func(idx int, selection *goquery.Selection) {
+		var f Floor
+		var found bool = false
+		selection.Find("div.c-post__header__author").Each(func(idx int, s1 *goquery.Selection) {
+			ID := s1.Find("a.userid").First().Text()
+			// 如果某一層樓的userID跟目標ID相同的話, 將其記錄下來
+			if ID == userID {
+				// 設置樓層資訊中的樓層數, 用戶ID, 用戶名稱
+				f.SetInfo(getFloorNum(s1.Find("a.floor").First().Text()),
+					s1.Find("a.username").First().Text(),
+					s1.Find("a.userid").First().Text())
+				found = true
+			}
+		})
+		if found {
+			selection.Find("div.c-article__content").Each(func(idx int, s1 *goquery.Selection) {
+				// 將空格刪掉
+				s1.Remove()
+				f.Setcontent(s1.Text())
+				fs = append(fs, f)
+			})
+		}
+	})
 	return fs
 }
 
