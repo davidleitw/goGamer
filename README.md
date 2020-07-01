@@ -287,12 +287,18 @@ user@user:~$ ./main -url="https://forum.gamer.com.tw/C.php?page=2&bsn=60076&snA=
 }
 ```
 
-錯誤時候的回傳
+- 錯誤時候的回傳
 
 ```json
 {
     "status": 400,
-    "error":  "請確認一下傳入的資料有沒有符合api的格式",
+    "error":  "請確認一下傳入的資料有沒有符合api的格式"
+}
+```
+```json 
+{
+    "status": 500, 
+    "error": "伺服器在處理request的時候發生了錯誤, 請稍後再測試" 
 }
 ```
 --- 
@@ -344,7 +350,57 @@ user@user:~$ ./main -url="https://forum.gamer.com.tw/C.php?page=2&bsn=60076&snA=
 }
 ```
 
-錯誤時候的回傳
+- 錯誤時候的回傳
+
+```json
+{
+    "status": 400,
+    "error":  "請確認一下傳入的資料有沒有符合api的格式"
+}
+```
+```json 
+{
+    "status": 500, 
+    "error": "伺服器在處理request的時候發生了錯誤, 請稍後再測試" 
+}
+```
+
+### 查詢單一用戶資料
+
+以單一用戶的ID獲得其帳號的個人資料
+
+
+#### Request 
+
+- Method: **GET**
+- URL: ```https://go-gamer.herokuapp.com/FindUserInfo?ID={UserID}```
+- Example: ```https://go-gamer.herokuapp.com/FindUserInfo?ID=leichitw```
+- Headers
+- Body 
+```
+
+
+```
+#### Response 
+- Body 
+
+```json 
+{
+    "status": 200, 
+    "data": {
+        "UserID": "leichitw",          
+        "UserName": "驥哥",            
+        "Title": "只知kuso的小平民",     
+        "Lever": 24,                  
+        "Race": "人類",                
+        "Occupation": "劍士",          
+        "Balance": 1285,              
+        "GP": 77                       
+    }
+}
+```
+
+- 錯誤時候的回傳
 
 ```json
 {
