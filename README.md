@@ -233,6 +233,13 @@ user@user:~$ ./main -url="https://forum.gamer.com.tw/C.php?page=2&bsn=60076&snA=
     "error":  "請確認一下傳入的資料有沒有符合api的格式",
 }
 ```
+```json 
+{
+    "status": 500, 
+    "error": "伺服器在處理request的時候發生了錯誤, 請稍後再測試" 
+}
+```
+
 
 ---
 ### 找到某個User在某個討論串中的所有文章
