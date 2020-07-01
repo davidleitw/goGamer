@@ -1,11 +1,8 @@
 package gamer
 
 import (
-	"errors"
 	"fmt"
-	"io/ioutil"
-	"log"
-	"net/http"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -13,28 +10,66 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
-// 獲得完整一頁的HTML檔案 以字串表示
-func getPageBody(url string) (string, error) {
-	client := &http.Client{}
-	req, err := http.NewRequest("GET", url, nil)
-	req.Header.Set("User-Agent", "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)")
+// Find開頭的函數都是爬蟲的主要部份
+
+// 獲得單一用戶的帳號資訊
+func FindUserInfo(UserID string) (UserInfo, error) {
+	var user UserInfo
+	// 獲得該用戶的小屋網址
+	baseurl := fmt.Sprintf("https://home.gamer.com.tw/homeindex.php?owner=%s", UserID)
+
+	// 由url轉換成html文檔
+	html, err := getPageBody(baseurl)
 	if err != nil {
-		return "", err
+		return user, err
+	}
+	// 解析html文檔來找尋特定的使用者
+	dom, err := goquery.NewDocumentFromReader(strings.NewReader(html))
+	if err != nil {
+		return user, err
 	}
 
-	res, err := client.Do(req)
-	if err != nil {
-		log.Printf("錯誤, 請確認您輸入的網址是否正確, 錯誤網址為: %s\n", url)
-		return "", nil
-	}
-	defer res.Body.Close()
+	userNode := dom.Find("div#BH-slave>div.MSG-list2").First()
+	userNode.Find("li").EachWithBreak(func(idx int, Selection *goquery.Selection) bool {
+		switch idx {
+		case 0:
+			// 在巴哈的Html裡面完整形式: 帳號：leichitw  注意! 中間的冒號是全形的..
+			userID := strings.Split(Selection.Text(), "：")[1]
+			user.UserID = userID
+		case 1:
+			userName := strings.Split(Selection.Text(), "：")[1]
+			user.UserName = userName
+		case 2:
+			title := strings.Split(Selection.Text(), "：")[1]
+			user.Title = title
+		case 3:
+			info := strings.Split(Selection.Text(), "/")
+			// strings.Replace(xx, " ", "", -1) => 把空格過濾掉
+			// 等級以整數表示
+			level, _ := strconv.Atoi(strings.Replace(info[0][2:], " ", "", -1))
+			race := strings.Replace(info[1], " ", "", -1)
+			occu := strings.Replace(info[2], " ", "", -1)
 
-	if res.StatusCode != 200 {
-		fmt.Println("Error, Status code is ", res.StatusCode)
-		return "", errors.New("Status code is not 200!")
-	}
-	bodyByte, _ := ioutil.ReadAll(res.Body)
-	return string(bodyByte), nil
+			user.Lever = level
+			user.Race = race
+			user.Occupation = occu
+		case 4:
+			balance, _ := strconv.Atoi(strings.Split(Selection.Text(), "：")[1]) // 以整數表示
+			user.Balance = balance
+		case 5:
+			gp, _ := strconv.Atoi(strings.Split(Selection.Text(), "：")[1])
+			user.GP = gp
+		default:
+			// 讀到gp完就中斷遍歷
+			return false
+		}
+		return true
+	})
+	return user, nil
+}
+
+func FindAllArticleTitle(baseurl string, start, end int) {
+
 }
 
 func FindAllFloorInfo(baseurl string) (FloorSet, error) {
@@ -73,7 +108,7 @@ func FindAllFloor(baseurl, userID string) (FloorSet, error) {
 	// 對於每個頁的連結去get其html, 並且用goquery分析
 	for _, url := range urls {
 		go func() {
-			f := handle(url, userID, wg)
+			f := handleFindUser(url, userID, wg)
 			// 將樓層資訊彙整到Floor set裡面
 			if len(f) >= 1 {
 				Fs.AddFloors(f)
@@ -102,7 +137,7 @@ func FindAuthorFloor(baseurl, userID string) (FloorSet, error) {
 	// 對於每個頁的連結去get其html, 並且用goquery分析
 	for _, url := range urls {
 		go func() {
-			f := handle(url, userID, wg)
+			f := handleFindUser(url, userID, wg)
 			// 將樓層資訊彙整到Floor set裡面
 			if len(f) >= 1 {
 				Fs.AddFloors(f)
@@ -116,7 +151,7 @@ func FindAuthorFloor(baseurl, userID string) (FloorSet, error) {
 }
 
 // 爬蟲主體, 爬完之後把每一層樓的資料放在一個Floor陣列傳回
-func handle(url string, userID string, wg *sync.WaitGroup) []Floor {
+func handleFindUser(url string, userID string, wg *sync.WaitGroup) []Floor {
 	var fs []Floor
 	// 由url轉換成html文檔
 	html, _ := getPageBody(url)

@@ -16,4 +16,5 @@ func main() {
 	f, _ := gamer.FindAuthorFloor(*urlPtr, *idPtr)
 	f.GetResult()
 	fmt.Println(time.Since(s))
+	//gamer.FindUserInfo("leichitw")
 }

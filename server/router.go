@@ -34,5 +34,6 @@ func NewRouter() *gin.Engine {
 	server.POST("/FindAllFloor", api.FindAllFloor)
 	server.POST("/FindAuthorFloor", api.FindAuthorFloor)
 	server.POST("/FindAllFloorInfo", api.FindAllFloorInfo)
+	server.GET("/FindUserInfo", api.FindUserInfo)
 	return server
 }

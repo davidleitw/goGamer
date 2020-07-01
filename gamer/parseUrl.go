@@ -1,7 +1,11 @@
 package gamer
 
 import (
+	"errors"
 	"fmt"
+	"io/ioutil"
+	"log"
+	"net/http"
 	"net/url"
 	"strconv"
 	"strings"
@@ -10,6 +14,30 @@ import (
 )
 
 // const baseurl = "https://forum.gamer.com.tw/C.php?page=1&bsn=60076&snA=3146926"
+
+// 獲得完整一頁的HTML檔案 以字串表示
+func getPageBody(url string) (string, error) {
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", url, nil)
+	req.Header.Set("User-Agent", "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)")
+	if err != nil {
+		return "", err
+	}
+
+	res, err := client.Do(req)
+	if err != nil {
+		log.Printf("錯誤, 請確認您輸入的網址是否正確, 錯誤網址為: %s\n", url)
+		return "", nil
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != 200 {
+		fmt.Println("Error, Status code is ", res.StatusCode)
+		return "", errors.New("Status code is not 200!")
+	}
+	bodyByte, _ := ioutil.ReadAll(res.Body)
+	return string(bodyByte), nil
+}
 
 //指定userID找樓
 func getAuthorUrlSet(baseurl, userID string) ([]string, error) {
@@ -79,6 +107,35 @@ func getFloorInfo(baseurl string) (string, string, error) {
 	}
 	bsn, snA := values.Get("bsn"), values.Get("snA")
 	return bsn, snA, nil
+}
+
+func getBsn(baseurl string) (string, error) {
+	parse, err := url.Parse(baseurl)
+	if err != nil {
+		return "", err
+	}
+
+	values, err := url.ParseQuery(parse.RawQuery)
+	if err != nil {
+		return "", err
+	}
+	bsn := values.Get("bsn")
+	return bsn, nil
+}
+
+// 查詢單一query
+func getQuery(baseurl string, parameter string) (string, error) {
+	parse, err := url.Parse(baseurl)
+	if err != nil {
+		return "", err
+	}
+
+	values, err := url.ParseQuery(parse.RawQuery)
+	if err != nil {
+		return "", err
+	}
+
+	return values.Get(parameter), nil
 }
 
 func getAuthorMaxFloorNumber(baseurl, userID string) (int, error) {
