@@ -398,7 +398,7 @@ user@user:~$ ./main -url="https://forum.gamer.com.tw/C.php?page=2&bsn=60076&snA=
         "UserID": "leichitw",          
         "UserName": "驥哥",            
         "Title": "只知kuso的小平民",     
-        "Lever": 24,                  
+        "Level": 24,                  
         "Race": "人類",                
         "Occupation": "劍士",          
         "Balance": 1285,              

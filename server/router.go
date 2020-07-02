@@ -31,9 +31,14 @@ func NewRouter() *gin.Engine {
 	// 設置debug模式
 	gin.SetMode(gin.DebugMode)
 	server := gin.Default()
+	server.StaticFS("/searchUser", http.Dir("./frontend/searchUser"))
+
 	server.POST("/FindAllFloor", api.FindAllFloor)
 	server.POST("/FindAuthorFloor", api.FindAuthorFloor)
 	server.POST("/FindAllFloorInfo", api.FindAllFloorInfo)
 	server.GET("/FindUserInfo", api.FindUserInfo)
+	server.GET("/", func(c *gin.Context) { // "/" 自動導向 "/searchUser"
+		c.Redirect(http.StatusMovedPermanently, "/searchUser")
+	})
 	return server
 }
