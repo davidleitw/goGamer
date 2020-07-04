@@ -452,6 +452,7 @@ user@user:~$ ./main -url="https://forum.gamer.com.tw/C.php?page=2&bsn=60076&snA=
                 "Balance": 47148,
                 "GP": 71
             },
+        }
         {
             "SubBsn": "認真求助", 
             "SummaryGP": 0, 
