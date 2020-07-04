@@ -1,6 +1,7 @@
 package gamer
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -15,28 +16,33 @@ import (
 
 // const baseurl = "https://forum.gamer.com.tw/C.php?page=1&bsn=60076&snA=3146926"
 
-// 獲得完整一頁的HTML檔案 以字串表示
-func getPageBody(url string) (string, error) {
+// 用Get的方式取得指定網址的html文檔, 並且轉換成goquery用來檢索的strcut
+func getDecument(url string) (*goquery.Document, error) {
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", url, nil)
 	req.Header.Set("User-Agent", "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)")
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	res, err := client.Do(req)
 	if err != nil {
 		log.Printf("錯誤, 請確認您輸入的網址是否正確, 錯誤網址為: %s\n", url)
-		return "", nil
+		return nil, nil
 	}
 	defer res.Body.Close()
 
 	if res.StatusCode != 200 {
 		fmt.Println("Error, Status code is ", res.StatusCode)
-		return "", errors.New("Status code is not 200!")
+		return nil, errors.New("Status code is not 200!")
 	}
 	bodyByte, _ := ioutil.ReadAll(res.Body)
-	return string(bodyByte), nil
+
+	dom, err := goquery.NewDocumentFromReader(bytes.NewReader(bodyByte))
+	if err != nil {
+		return nil, err
+	}
+	return dom, nil
 }
 
 //指定userID找樓
@@ -70,6 +76,25 @@ func getUrlSet(baseurl string) ([]string, error) {
 	return result, nil
 }
 
+func getSearchUrl(page int, bsn, search string) string {
+	return fmt.Sprintf("https://forum.gamer.com.tw/B.php?page=%d&bsn=%s&qt=1&q=%s", page, bsn, search)
+}
+
+// 如果要找文章, 需要尋找搜尋結果總共有幾頁
+func getMaxPosterNumber(baseurl string) (int, error) {
+	dom, err := getDecument(baseurl)
+	if err != nil {
+		return -1, err
+	}
+	// 以整數形式表示共有幾頁的搜尋結果
+	max, err := strconv.Atoi(dom.Find("p.BH-pagebtnA>a").Last().Text())
+	if err == nil {
+		return max, nil
+	} else {
+		return -1, err
+	}
+}
+
 // 獲得一串討論串最高的樓層數
 func getMaxFloorNumber(baseurl string) (int, error) {
 	front := strings.Split(baseurl, "?")[0]
@@ -82,13 +107,13 @@ func getMaxFloorNumber(baseurl string) (int, error) {
 	if err != nil {
 		return -1, err
 	}
+
 	bsn := values.Get("bsn")
 	snA := values.Get("snA")
 
 	target := fmt.Sprintf("%s?page=%d&bsn=%s&snA=%s", front, 999999, bsn, snA)
 
-	html, _ := getPageBody(target)
-	dom, _ := goquery.NewDocumentFromReader(strings.NewReader(html))
+	dom, _ := getDecument(target)
 	s := dom.Find("div.c-post__header__author>a.floor").Last()
 	n := getFloorNum(s.Text())
 	return n, nil
@@ -154,8 +179,7 @@ func getAuthorMaxFloorNumber(baseurl, userID string) (int, error) {
 
 	target := fmt.Sprintf("%s?page=%d&bsn=%s&snA=%s&s_author=%s", front, 999999, bsn, snA, userID)
 
-	html, _ := getPageBody(target)
-	dom, _ := goquery.NewDocumentFromReader(strings.NewReader(html))
+	dom, _ := getDecument(target)
 	s := dom.Find("div.c-post__header__author>a.floor").Last()
 	n := getFloorNum(s.Text())
 	return n, nil

@@ -7,7 +7,7 @@ import (
 
 func main() {
 	r := server.NewRouter()
-	err := r.Run()
+	err := r.Run(":3000")
 	if err != nil {
 		fmt.Println("Some error with server.")
 	}

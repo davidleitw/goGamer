@@ -69,7 +69,7 @@ func (Fs *FloorSet) AddFloors(f []Floor) {
 	}
 }
 
-func (Fs *FloorSet) GetResult() {
+func (Fs *FloorSet) Result() {
 	Fs.SortResult()
 	for i := 0; i < len(Fs.floors); i++ {
 		log.Printf("%d >> %5d樓 ID=%s Name=%s\n", i+1, Fs.floors[i].GetNum(), Fs.floors[i].GetuserID(), Fs.floors[i].GetuserName())

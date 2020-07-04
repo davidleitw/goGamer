@@ -10,7 +10,32 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
-// Find開頭的函數都是爬蟲的主要部份
+//
+func SearchSpecifideTitle(baseurl, search string) (Posts, error) {
+	var Ps Posts
+	bsn, _ := getBsn(baseurl)
+	url := getSearchUrl(1, bsn, search) // like https://forum.gamer.com.tw/B.php?page=1&bsn=30861&qt=1&q=推薦
+	max, err := getMaxPosterNumber(url) // 獲得搜尋結果共有幾頁
+	if err != nil {
+		return Ps, err
+	}
+
+	wg := new(sync.WaitGroup)
+	wg.Add(max)
+
+	// 依照index存取文章, index越小, 文章越靠前 => 較新的文章
+	for index := 1; index <= max; index++ {
+		// 每頁遍歷獲得資料
+		go func() {
+			searchUrl := getSearchUrl(index, bsn, search)
+			PostSubset := handleSearchPostTitle(searchUrl, wg)
+			Ps.AppendPostSet(PostSubset)
+		}()
+		time.Sleep(25000 * time.Microsecond)
+	}
+	wg.Wait()
+	return Ps, nil
+}
 
 // 獲得單一用戶的帳號資訊
 func FindUserInfo(UserID string) (UserInfo, error) {
@@ -18,13 +43,7 @@ func FindUserInfo(UserID string) (UserInfo, error) {
 	// 獲得該用戶的小屋網址
 	baseurl := fmt.Sprintf("https://home.gamer.com.tw/homeindex.php?owner=%s", UserID)
 
-	// 由url轉換成html文檔
-	html, err := getPageBody(baseurl)
-	if err != nil {
-		return user, err
-	}
-	// 解析html文檔來找尋特定的使用者
-	dom, err := goquery.NewDocumentFromReader(strings.NewReader(html))
+	dom, err := getDecument(baseurl)
 	if err != nil {
 		return user, err
 	}
@@ -66,10 +85,6 @@ func FindUserInfo(UserID string) (UserInfo, error) {
 		return true
 	})
 	return user, nil
-}
-
-func FindAllArticleTitle(baseurl string, start, end int) {
-
 }
 
 func FindAllFloorInfo(baseurl string) (FloorSet, error) {
@@ -150,14 +165,40 @@ func FindAuthorFloor(baseurl, userID string) (FloorSet, error) {
 	return Fs, nil
 }
 
+// 以關鍵字在特定版找文
+func handleSearchPostTitle(url string, wg *sync.WaitGroup) []Post {
+	var ps []Post
+	defer wg.Done()
+	dom, _ := getDecument(url)
+	// 獲得索引值的起點 每篇文章都+1
+	// 過濾掉已經刪除的文章
+	dom.Find("tr.b-list-item").Each(func(idx int, s *goquery.Selection) {
+		subBsn := s.Find("p.b-list__summary__sort>a").Text()
+		gp, _ := strconv.Atoi(s.Find("td.b-list__summary>span.b-gp").Text())
+		title := s.Find("p.b-list__main__title").Text()
+		href, _ := s.Find("p.b-list__main__title").Attr("href")
+		userID := s.Find("p.b-list__count__user>a").Text()
+		userInfo, _ := FindUserInfo(userID)
+
+		// 把已刪除的文章忽略
+		if title != "首篇已刪" {
+			ps = append(ps, Post{
+				SubBsn:    subBsn,
+				SummaryGP: gp,
+				Href:      "https://forum.gamer.com.tw/" + href,
+				Title:     title,
+				Author:    userInfo,
+			})
+		}
+	})
+	return ps
+}
+
 // 爬蟲主體, 爬完之後把每一層樓的資料放在一個Floor陣列傳回
 func handleFindUser(url string, userID string, wg *sync.WaitGroup) []Floor {
 	var fs []Floor
-	// 由url轉換成html文檔
-	html, _ := getPageBody(url)
-	// 解析html文檔來找尋特定的使用者
-	dom, _ := goquery.NewDocumentFromReader(strings.NewReader(html))
 
+	dom, _ := getDecument(url)
 	dom.Find("div.c-section__main").Each(func(idx int, selection *goquery.Selection) {
 		var f Floor
 		var found bool = false
@@ -190,9 +231,8 @@ func handleFindUser(url string, userID string, wg *sync.WaitGroup) []Floor {
 func handleFindAllInfo(url string, wg *sync.WaitGroup) []Floor {
 	var fs []Floor
 	defer wg.Done()
-	html, _ := getPageBody(url)
-	dom, _ := goquery.NewDocumentFromReader(strings.NewReader(html))
 
+	dom, _ := getDecument(url)
 	dom.Find("div.c-section__main").Each(func(idx int, selection *goquery.Selection) {
 		var f Floor
 		selection.Find("div.c-post__header__author").Each(func(idx int, s1 *goquery.Selection) {
@@ -211,10 +251,9 @@ func handleFindAllInfo(url string, wg *sync.WaitGroup) []Floor {
 	return fs
 }
 
+// 測試用function
 func SingleTest(url string) {
-	html, _ := getPageBody(url)
-	dom, _ := goquery.NewDocumentFromReader(strings.NewReader(html))
-
+	dom, _ := getDecument(url)
 	dom.Find("div.c-section__main").Each(func(idx int, selection *goquery.Selection) {
 		selection.Find("div.c-post__header__author").Each(func(idx int, s1 *goquery.Selection) {
 			fmt.Println(s1.Text())
