@@ -425,9 +425,10 @@ user@user:~$ ./main -url="https://forum.gamer.com.tw/C.php?page=2&bsn=60076&snA=
 ```json 
 {
     "baseurl": "https://forum.gamer.com.tw/B.php?bsn=60076",
-    "search_title": "資工&&電機" // 如果使用&&就可以多條件查詢, 會返回兩條件都在title裡面的結果
+    "search_title": "資工&&電機" 
 }
 ```
+##### 如果使用&&就可以多條件查詢, 會返回兩條件都在title裡面的結果
 
 #### Response
 
@@ -438,11 +439,11 @@ user@user:~$ ./main -url="https://forum.gamer.com.tw/C.php?page=2&bsn=60076&snA=
     "status": 200,
     "data":[
         {
-            "SubBsn": "場外綜合", // 子分類
-            "SummaryGP": 1, // 文章獲得GP
-            "Href": "https://forum.gamer.com.tw/C.php?bsn=60076&snA=5636417&tnum=12", // 超連結
-            "Title": "讀資管雙電機輔資工問都問", // 文章標題
-            "Author": { // 發文者資訊
+            "SubBsn": "場外綜合",
+            "SummaryGP": 1, 
+            "Href": "https://forum.gamer.com.tw/C.php?bsn=60076&snA=5636417&tnum=12",
+            "Title": "讀資管雙電機輔資工問都問",
+            "Author": { 
                 "UserID": "justindu29",
                 "UserName": "Kallen",
                 "Title": "開始XD的見習生",
