@@ -323,7 +323,7 @@ user@user:~$ ./main -url="https://forum.gamer.com.tw/C.php?page=2&bsn=60076&snA=
 
 ```json
 {
-    "baseurl": "https://forum.gamer.com.tw/C.php?page=2&bsn=60076&snA=3146926",
+    "baseurl": "https://forum.gamer.com.tw/B.php?bsn=60076",
     "userID": "leichitw"
 }
 ```
@@ -424,12 +424,72 @@ user@user:~$ ./main -url="https://forum.gamer.com.tw/C.php?page=2&bsn=60076&snA=
 - Body 
 ```json 
 {
-    "baseurl": "https://forum.gamer.com.tw/B.php?bsn=30861",
-	"search_title": "新手&&全通畢業"
+    "baseurl": "https://forum.gamer.com.tw/B.php?bsn=60076",
+    "search_title": "資工&&電機" // 如果使用&&就可以多條件查詢, 會返回兩條件都在title裡面的結果
 }
 ```
 
+#### Response
 
+用多重查詢的時候可能會比較慢一點, 因為會跑兩次單一關鍵字的流程取交集
+
+```json
+{
+    "status": 200,
+    "data":[
+        {
+            "SubBsn": "場外綜合", // 子分類
+            "SummaryGP": 1, // 文章獲得GP
+            "Href": "https://forum.gamer.com.tw/C.php?bsn=60076&snA=5636417&tnum=12", // 超連結
+            "Title": "讀資管雙電機輔資工問都問", // 文章標題
+            "Author": { // 發文者資訊
+                "UserID": "justindu29",
+                "UserName": "Kallen",
+                "Title": "開始XD的見習生",
+                "Level": 20,
+                "Race": "人類",
+                "Occupation": "劍士",
+                "Balance": 47148,
+                "GP": 71
+            },
+        {
+            "SubBsn": "認真求助", 
+            "SummaryGP": 0, 
+            "Href": "https://forum.gamer.com.tw/C.php?bsn=60076&snA=5699267&tnum=2", 
+            "Title": "【問題】大三電機想考資工所有搞頭嗎?", 
+            "Author": { 
+                "UserID": "yue9432",
+                "UserName": "OnjojiToki",
+                "Title": "了解蘿莉的冒險者",
+                "Level": 25,
+                "Race": "人類",
+                "Occupation": "弓箭手",
+                "Balance": 51003,
+                "GP": 65
+            }
+        },
+        {
+            ....
+        },
+    ]
+}
+```
+
+- 錯誤時候的回傳
+
+```json
+{
+    "status": 400,
+    "error":  "請確認一下傳入的資料有沒有符合api的格式"
+}
+```
+```json 
+{
+    "status": 500, 
+    "error": "伺服器在處理request的時候發生了錯誤, 請稍後再測試" 
+}
+```
+--- 
 
 
 
