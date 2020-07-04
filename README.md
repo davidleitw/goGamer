@@ -29,6 +29,7 @@
     * [根據使用者ID獲得該使用者在特定討論串的發文紀錄](#找到某個User在某個討論串中的所有文章)
     * [根據使用者ID獲得該使用者在特定討論串的發文紀錄,速度較慢,因為會保留原始樓層](#找到某個User在某個討論串中的所有文章並保留原始樓層)
     * [獲得指定用戶的帳號訊息](#查詢單一用戶資料)
+    * [根據標題找文章(支援多條件搜索)](#根據標題在特定版找文章)
 --- 
 
 ## 巴哈姆特討論串網址分析
@@ -368,10 +369,9 @@ user@user:~$ ./main -url="https://forum.gamer.com.tw/C.php?page=2&bsn=60076&snA=
     "error": "伺服器在處理request的時候發生了錯誤, 請稍後再測試" 
 }
 ```
-
+--- 
 ### 查詢單一用戶資料
-
-以單一用戶的ID獲得其帳號的個人資料
+#### 以單一用戶的ID獲得其帳號的個人資料
 
 
 #### Request 
@@ -412,10 +412,22 @@ user@user:~$ ./main -url="https://forum.gamer.com.tw/C.php?page=2&bsn=60076&snA=
     "error":  "請確認一下傳入的資料有沒有符合api的格式",
 }
 ```
+---
+### 根據標題在特定版找文章
+#### 用標題當作條件在指定的版檢索文章, 支持多條件搜索 
 
+#### Request 
 
-
-
+- Method: **POST**
+- URL: ```https://go-gamer.herokuapp.com/SearchwithTitle```
+- Headers: Content-Type:application/json
+- Body 
+```json 
+{
+    "baseurl": "https://forum.gamer.com.tw/B.php?bsn=30861",
+	"search_title": "新手&&全通畢業"
+}
+```
 
 
 

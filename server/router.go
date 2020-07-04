@@ -36,8 +36,8 @@ func NewRouter() *gin.Engine {
 	server.POST("/FindAllFloor", api.FindAllFloor)
 	server.POST("/FindAuthorFloor", api.FindAuthorFloor)
 	server.POST("/FindAllFloorInfo", api.FindAllFloorInfo)
-	server.GET("/FindUserInfo", api.FindUserInfo)
 	server.POST("/SearchwithTitle", api.SearchwithTitle)
+	server.GET("/FindUserInfo", api.FindUserInfo)
 	server.GET("/", func(c *gin.Context) { // "/" 自動導向 "/searchUser"
 		c.Redirect(http.StatusMovedPermanently, "/searchUser")
 	})

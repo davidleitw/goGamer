@@ -10,11 +10,11 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
-//
-func SearchSpecifideTitle(baseurl, search string) (Posts, error) {
+// 根據標題找文章
+func SearchSpecifideTitle(baseurl, key string) (Posts, error) {
 	var Ps Posts
 	bsn, _ := getBsn(baseurl)
-	url := getSearchUrl(1, bsn, search) // like https://forum.gamer.com.tw/B.php?page=1&bsn=30861&qt=1&q=推薦
+	url := getSearchUrl(1, bsn, key)    // like https://forum.gamer.com.tw/B.php?page=1&bsn=30861&qt=1&q=推薦
 	max, err := getMaxPosterNumber(url) // 獲得搜尋結果共有幾頁
 	if err != nil {
 		return Ps, err
@@ -23,11 +23,10 @@ func SearchSpecifideTitle(baseurl, search string) (Posts, error) {
 	wg := new(sync.WaitGroup)
 	wg.Add(max)
 
-	// 依照index存取文章, index越小, 文章越靠前 => 較新的文章
 	for index := 1; index <= max; index++ {
 		// 每頁遍歷獲得資料
 		go func() {
-			searchUrl := getSearchUrl(index, bsn, search)
+			searchUrl := getSearchUrl(index, bsn, key)
 			PostSubset := handleSearchPostTitle(searchUrl, wg)
 			Ps.AppendPostSet(PostSubset)
 		}()
