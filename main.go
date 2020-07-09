@@ -1,7 +1,7 @@
 package main
 
 import (
-	"goGamer/gamer"
+	"github.com/davidleitw/goGamer/gamer"
 )
 
 func main() {
