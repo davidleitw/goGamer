@@ -1,5 +1,4 @@
-module goGamer
-
+module github.com/davidleitw/goGamer
 go 1.13
 
 require (

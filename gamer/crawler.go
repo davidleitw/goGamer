@@ -30,7 +30,7 @@ func SearchSpecifideTitle(baseurl, key string) (Posts, error) {
 			PostSubset := handleSearchPostTitle(searchUrl, wg)
 			Ps.AppendPostSet(PostSubset)
 		}()
-		time.Sleep(25000 * time.Microsecond)
+		time.Sleep(250 * time.Microsecond)
 	}
 	wg.Wait()
 	return Ps, nil
@@ -129,7 +129,7 @@ func FindAllFloor(baseurl, userID string) (FloorSet, error) {
 			}
 		}()
 		// 避免過於頻繁的get, 導致request被擋下來
-		time.Sleep(25000 * time.Microsecond)
+		time.Sleep(2500 * time.Microsecond)
 	}
 	wg.Wait()
 	Fs.SortResult()
